@@ -9,6 +9,7 @@ plugins {
 
 apply plugin: 'org.jetbrains.intellij'
 apply plugin: 'java'
+sourceCompatibility = 1.8
 // dependencies {
 //     compile project(':ThirdPart:checktreetable')
 //     compile project(':ThirdPart:json')

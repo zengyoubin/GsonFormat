@@ -43,6 +43,13 @@ public class SettingDialog extends JFrame {
     private JRadioButton lombokRB;
     private String annotaionStr;
     private JCheckBox useWrapperClassCB;
+    private JCheckBox useJava8LocalDateTimeCheckBox;
+    private JCheckBox dateFormatCheckBox;
+    private JTextField dateFormatTextField;
+    private JCheckBox dateTimeFormatCheckBox;
+    private JTextField dateTimeFormatField;
+    private JTextField timeFormatTextField;
+    private JCheckBox timeFormatCheckBox;
 
     public SettingDialog(Project project) {
         setContentPane(contentPane);
@@ -72,29 +79,39 @@ public class SettingDialog extends JFrame {
             }
         }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
-        if (Config.getInstant().isFieldPrivateMode()) {
+        Config config = Config.getInstant();
+        if (config.isFieldPrivateMode()) {
             fieldPrivateRadioButton.setSelected(true);
         } else {
             fieldPublicRadioButton.setSelected(true);
         }
 
-        virgoModelCB.setSelected(Config.getInstant().isVirgoMode());
-        generateCommentsCT.setSelected(Config.getInstant().isGenerateComments());
-        filedPrefixCB.setSelected(Config.getInstant().isUseFieldNamePrefix());
-        filedPrefixTF.setEnabled(Config.getInstant().isUseFieldNamePrefix());
-        useSerializedNameCheckBox.setSelected(Config.getInstant().isUseSerializedName());
-        objectFromDataCB.setSelected(Config.getInstant().isObjectFromData());
-        objectFromData1CB.setSelected(Config.getInstant().isObjectFromData1());
-        arrayFromDataCB.setSelected(Config.getInstant().isArrayFromData());
-        arrayFromData1CB.setSelected(Config.getInstant().isArrayFromData1());
-        reuseEntityCB.setSelected(Config.getInstant().isReuseEntity());
+        virgoModelCB.setSelected(config.isVirgoMode());
+        generateCommentsCT.setSelected(config.isGenerateComments());
+        filedPrefixCB.setSelected(config.isUseFieldNamePrefix());
+        filedPrefixTF.setEnabled(config.isUseFieldNamePrefix());
+        useSerializedNameCheckBox.setSelected(config.isUseSerializedName());
+        objectFromDataCB.setSelected(config.isObjectFromData());
+        objectFromData1CB.setSelected(config.isObjectFromData1());
+        arrayFromDataCB.setSelected(config.isArrayFromData());
+        arrayFromData1CB.setSelected(config.isArrayFromData1());
+        reuseEntityCB.setSelected(config.isReuseEntity());
         objectButton.setEnabled(objectFromDataCB.isSelected());
         object1Button.setEnabled(objectFromData1CB.isSelected());
         arrayButton.setEnabled(arrayFromDataCB.isSelected());
         array1Button.setEnabled(arrayFromData1CB.isSelected());
-        suffixEdit.setText(Config.getInstant().getSuffixStr());
-        splitGenerateMode.setSelected(Config.getInstant().isSplitGenerate());
-        useWrapperClassCB.setSelected(Config.getInstant().isUseWrapperClass());
+        suffixEdit.setText(config.getSuffixStr());
+        splitGenerateMode.setSelected(config.isSplitGenerate());
+        useWrapperClassCB.setSelected(config.isUseWrapperClass());
+        useJava8LocalDateTimeCheckBox.setSelected(config.isUseJava8LocalDateTime());
+        dateTimeFormatCheckBox.setSelected(config.isDateTimeFormatCheckBox());
+        dateTimeFormatField.setText(config.getDateTimeFormatField());
+        dateFormatCheckBox.setSelected(config.isDateFormatCheckBox());
+        dateFormatTextField.setText(config.getDateFormatTextField());
+        timeFormatCheckBox.setSelected(config.isTimeFormatCheckBox());
+        timeFormatTextField.setText(config.getTimeFormatTextField());
+
+
         objectFromDataCB.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
@@ -188,7 +205,7 @@ public class SettingDialog extends JFrame {
             }
         });
         String filedPrefix = null;
-        filedPrefix = Config.getInstant().getFiledNamePreFixStr();
+        filedPrefix = config.getFiledNamePreFixStr();
         if (TextUtils.isEmpty(filedPrefix)) {
             JavaCodeStyleManager styleManager = JavaCodeStyleManager.getInstance(project);
             filedPrefix = styleManager.getPrefixByVariableKind(VariableKind.FIELD
@@ -262,7 +279,7 @@ public class SettingDialog extends JFrame {
         });
 
 
-        annotaionStr = Config.getInstant().getAnnotationStr();
+        annotaionStr = config.getAnnotationStr();
         if (annotaionStr.equals(Constant.gsonAnnotation)) {
             gsonJRB.setSelected(true);
             annotationFT.setEnabled(false);
@@ -343,6 +360,13 @@ public class SettingDialog extends JFrame {
         Config.getInstant().setUseFieldNamePrefix(filedPrefixCB.isSelected());
         Config.getInstant().setSplitGenerate(splitGenerateMode.isSelected());
         Config.getInstant().setUseWrapperClass(useWrapperClassCB.isSelected());
+        Config.getInstant().setUseJava8LocalDateTime(useJava8LocalDateTimeCheckBox.isSelected());
+        Config.getInstant().setDateTimeFormatCheckBox(dateTimeFormatCheckBox.isSelected());
+        Config.getInstant().setDateTimeFormatField(dateTimeFormatField.getText());
+        Config.getInstant().setDateFormatCheckBox(dateFormatCheckBox.isSelected());
+        Config.getInstant().setDateFormatTextField(dateFormatTextField.getText());
+        Config.getInstant().setTimeFormatCheckBox(timeFormatCheckBox.isSelected());
+        Config.getInstant().setTimeFormatTextField(timeFormatTextField.getText());
         Config.getInstant().save();
 
         dispose();

@@ -1,6 +1,12 @@
 package org.gsonformat.intellij.config;
 
 import com.intellij.ide.util.PropertiesComponent;
+import org.gsonformat.intellij.common.StringUtils;
+
+import javax.swing.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 
 /**
  * Created by dim on 15/5/31.
@@ -41,6 +47,23 @@ public class Config {
      */
     private boolean useWrapperClass;
 
+    /**
+     * 是否使用包装类来替代基本类型
+     */
+    private boolean useJava8LocalDateTime;
+
+    private boolean dateFormatCheckBox;
+    private String dateFormatTextField;
+    private boolean dateTimeFormatCheckBox;
+    private String dateTimeFormatField;
+    private boolean timeFormatCheckBox;
+    private String timeFormatTextField;
+
+    private DateTimeFormatter dateTimeFormatter;
+    private DateTimeFormatter dateFormatter;
+    private DateTimeFormatter timeFormatter;
+    private SimpleDateFormat simpleDateFormat;
+
 
     private Config() {
 
@@ -68,6 +91,14 @@ public class Config {
         PropertiesComponent.getInstance().setValue("generateComments", generateComments + "");
         PropertiesComponent.getInstance().setValue("splitGenerate", splitGenerate + "");
         PropertiesComponent.getInstance().setValue("useWrapperClass", useWrapperClass + "");
+        PropertiesComponent.getInstance().setValue("useJava8LocalDateTime", useJava8LocalDateTime + "");
+        PropertiesComponent.getInstance().setValue("dateFormatCheckBox", dateFormatCheckBox + "");
+        PropertiesComponent.getInstance().setValue("dateFormatTextField", dateFormatTextField + "");
+        PropertiesComponent.getInstance().setValue("dateTimeFormatCheckBox", dateTimeFormatCheckBox + "");
+        PropertiesComponent.getInstance().setValue("dateTimeFormatField", dateTimeFormatField + "");
+        PropertiesComponent.getInstance().setValue("timeFormatCheckBox", timeFormatCheckBox + "");
+        PropertiesComponent.getInstance().setValue("timeFormatTextField", timeFormatTextField + "");
+
 
     }
 
@@ -90,13 +121,44 @@ public class Config {
             config.setAnnotationStr(PropertiesComponent.getInstance().getValue("annotationStr", Constant.gsonAnnotation));
             config.setEntityPackName(PropertiesComponent.getInstance().getValue("entityPackName"));
             config.setFiledNamePreFixStr(PropertiesComponent.getInstance().getValue("filedNamePreFixStr"));
-            config.setErrorCount(PropertiesComponent.getInstance().getOrInitInt("errorCount", 0));
+            config.setErrorCount(PropertiesComponent.getInstance().getInt("errorCount", 0));
             config.setVirgoMode(PropertiesComponent.getInstance().getBoolean("virgoMode", true));
             config.setUseFieldNamePrefix(PropertiesComponent.getInstance().getBoolean("useFieldNamePrefix", false));
             config.setGenerateComments(PropertiesComponent.getInstance().getBoolean("generateComments", true));
             config.setSplitGenerate(PropertiesComponent.getInstance().getBoolean("splitGenerate", false));
-            config.setUseWrapperClass(PropertiesComponent.getInstance().getBoolean("useWrapperClass", false));
+            config.setUseWrapperClass(PropertiesComponent.getInstance().getBoolean("useWrapperClass", true));
+            config.setUseJava8LocalDateTime(PropertiesComponent.getInstance().getBoolean("useJava8LocalDateTime", true));
+            config.setDateFormatCheckBox(PropertiesComponent.getInstance().getBoolean("dateFormatCheckBox", false));
+            config.setDateFormatTextField(PropertiesComponent.getInstance().getValue("dateFormatTextField", "yyyy-MM-dd"));
+            config.setDateTimeFormatCheckBox(PropertiesComponent.getInstance().getBoolean("dateTimeFormatCheckBox", true));
+            config.setDateTimeFormatField(PropertiesComponent.getInstance().getValue("dateTimeFormatField", "yyyy-MM-dd hh:mm:ss"));
+            config.setTimeFormatCheckBox(PropertiesComponent.getInstance().getBoolean("timeFormatCheckBox", false));
+            config.setTimeFormatTextField(PropertiesComponent.getInstance().getValue("timeFormatTextField", "hh:mm:ss"));
+        }
+        if (config.useJava8LocalDateTime) {
+            if (config.isDateTimeFormatCheckBox() && StringUtils.hasText(config.dateTimeFormatField)) {
+                config.dateTimeFormatter = DateTimeFormatter.ofPattern(config.dateTimeFormatField);
+            } else {
+                config.dateTimeFormatter = null;
+            }
+            if (config.isDateFormatCheckBox() && StringUtils.hasText(config.dateFormatTextField)) {
+                config.dateFormatter = DateTimeFormatter.ofPattern(config.dateFormatTextField);
+            } else {
+                config.dateFormatter = null;
+            }
+            if (config.isTimeFormatCheckBox() && StringUtils.hasText(config.timeFormatTextField)) {
+                config.timeFormatter = DateTimeFormatter.ofPattern(config.timeFormatTextField);
+            } else {
+                config.timeFormatter = null;
 
+            }
+
+        } else {
+            if (config.isDateTimeFormatCheckBox() && StringUtils.hasText(config.dateTimeFormatField)) {
+                config.simpleDateFormat = new SimpleDateFormat(config.dateTimeFormatField);
+            } else {
+                config.simpleDateFormat = null;
+            }
         }
         return config;
     }
@@ -315,7 +377,7 @@ public class Config {
         if (entityPackName == null) {
             return;
         }
-        setEntityPackName(entityPackName+".");
+        setEntityPackName(entityPackName + ".");
         save();
     }
 
@@ -325,5 +387,101 @@ public class Config {
 
     public void setUseWrapperClass(boolean useWrapperClass) {
         this.useWrapperClass = useWrapperClass;
+    }
+
+    public boolean isUseJava8LocalDateTime() {
+        return useJava8LocalDateTime;
+    }
+
+    public void setUseJava8LocalDateTime(boolean useJava8LocalDateTime) {
+        this.useJava8LocalDateTime = useJava8LocalDateTime;
+    }
+
+    public boolean isDateFormatCheckBox() {
+        return dateFormatCheckBox;
+    }
+
+    public void setDateFormatCheckBox(boolean dateFormatCheckBox) {
+        this.dateFormatCheckBox = dateFormatCheckBox;
+    }
+
+    public String getDateFormatTextField() {
+        return dateFormatTextField;
+    }
+
+    public void setDateFormatTextField(String dateFormatTextField) {
+        this.dateFormatTextField = dateFormatTextField;
+    }
+
+    public boolean isDateTimeFormatCheckBox() {
+        return dateTimeFormatCheckBox;
+    }
+
+    public void setDateTimeFormatCheckBox(boolean dateTimeFormatCheckBox) {
+        this.dateTimeFormatCheckBox = dateTimeFormatCheckBox;
+    }
+
+    public String getDateTimeFormatField() {
+        return dateTimeFormatField;
+    }
+
+    public void setDateTimeFormatField(String dateTimeFormatField) {
+        this.dateTimeFormatField = dateTimeFormatField;
+    }
+
+    public Boolean getTimeFormatCheckBox() {
+        return timeFormatCheckBox;
+    }
+
+    public void setTimeFormatCheckBox(Boolean timeFormatCheckBox) {
+        this.timeFormatCheckBox = timeFormatCheckBox;
+    }
+
+    public String getTimeFormatTextField() {
+        return timeFormatTextField;
+    }
+
+    public void setTimeFormatTextField(String timeFormatTextField) {
+        this.timeFormatTextField = timeFormatTextField;
+    }
+
+    public boolean isTimeFormatCheckBox() {
+        return timeFormatCheckBox;
+    }
+
+    public void setTimeFormatCheckBox(boolean timeFormatCheckBox) {
+        this.timeFormatCheckBox = timeFormatCheckBox;
+    }
+
+    public DateTimeFormatter getDateTimeFormatter() {
+        return dateTimeFormatter;
+    }
+
+    public void setDateTimeFormatter(DateTimeFormatter dateTimeFormatter) {
+        this.dateTimeFormatter = dateTimeFormatter;
+    }
+
+    public DateTimeFormatter getDateFormatter() {
+        return dateFormatter;
+    }
+
+    public void setDateFormatter(DateTimeFormatter dateFormatter) {
+        this.dateFormatter = dateFormatter;
+    }
+
+    public DateTimeFormatter getTimeFormatter() {
+        return timeFormatter;
+    }
+
+    public void setTimeFormatter(DateTimeFormatter timeFormatter) {
+        this.timeFormatter = timeFormatter;
+    }
+
+    public SimpleDateFormat getSimpleDateFormat() {
+        return simpleDateFormat;
+    }
+
+    public void setSimpleDateFormat(SimpleDateFormat simpleDateFormat) {
+        this.simpleDateFormat = simpleDateFormat;
     }
 }

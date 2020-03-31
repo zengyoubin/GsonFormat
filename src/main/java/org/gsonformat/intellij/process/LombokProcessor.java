@@ -1,6 +1,7 @@
 package org.gsonformat.intellij.process;
 
 import com.intellij.psi.*;
+import com.intellij.psi.util.PsiUtil;
 import org.apache.http.util.TextUtils;
 import org.gsonformat.intellij.common.FieldHelper;
 import org.gsonformat.intellij.common.Try;
@@ -8,13 +9,17 @@ import org.gsonformat.intellij.config.Config;
 import org.gsonformat.intellij.config.Constant;
 import org.gsonformat.intellij.entity.ClassEntity;
 import org.gsonformat.intellij.entity.FieldEntity;
+import org.jetbrains.annotations.Nullable;
 
+import java.time.LocalDateTime;
 import java.util.regex.Pattern;
 
 /**
  * Created by dim on 16/11/7.
  */
 public class LombokProcessor extends Processor {
+    private Pattern pattern = Pattern.compile("@.*?NoArgsConstructor");
+    private Pattern pattern2 = Pattern.compile("@.*?Data");
 
     @Override
     protected void onStarProcess(ClassEntity classEntity, PsiElementFactory factory, PsiClass cls, IProcessor visitor) {
@@ -26,19 +31,42 @@ public class LombokProcessor extends Processor {
         if (factory == null || generateClass == null) {
             return;
         }
+        // PsiImportStatement importStatement = factory.createImportStatement(new PsiUtil.NullPsiClass() {
+        //     @Nullable
+        //     @Override
+        //     public String getQualifiedName() {
+        //         return LocalDateTime.class.getSimpleName();
+        //     }
+        //
+        //     @Override
+        //     public PsiElement getParent() {
+        //         return null;
+        //     }
+        // });
+
         PsiModifierList modifierList = generateClass.getModifierList();
         if (modifierList != null) {
-            PsiElement firstChild = modifierList.getFirstChild();
-            Pattern pattern = Pattern.compile("@.*?NoArgsConstructor");
-            if (firstChild != null && !pattern.matcher(firstChild.getText()).find()) {
-                PsiAnnotation annotationFromText = factory.createAnnotationFromText("@lombok.NoArgsConstructor", generateClass);
-                modifierList.addBefore(annotationFromText, firstChild);
+            PsiElement[] children = modifierList.getChildren();
+            boolean noArgsConstructorAnnotationExist = false;
+            boolean lombokAnnotationExist = false;
+            for (PsiElement child : children) {
+                if (child != null) {
+                    if (pattern.matcher(child.getText()).find()) {
+                        noArgsConstructorAnnotationExist = true;
+
+                    }
+                    if (pattern2.matcher(child.getText()).find()) {
+                        lombokAnnotationExist = true;
+                    }
+                }
             }
-            Pattern pattern2 = Pattern.compile("@.*?Data");
-            if (firstChild != null && !pattern2.matcher(firstChild.getText()).find()) {
-                PsiAnnotation annotationFromText = factory.createAnnotationFromText("@lombok.Data", generateClass);
-                modifierList.addBefore(annotationFromText, firstChild);
+            if (!noArgsConstructorAnnotationExist) {
+                modifierList.addBefore(factory.createAnnotationFromText("@lombok.NoArgsConstructor", generateClass), modifierList.getFirstChild());
             }
+            if (!lombokAnnotationExist) {
+                modifierList.addBefore(factory.createAnnotationFromText("@lombok.Data", generateClass), modifierList.getFirstChild());
+            }
+            // modifierList.addBefore(importStatement, modifierList.getFirstChild());
         }
     }
 
@@ -48,7 +76,7 @@ public class LombokProcessor extends Processor {
             Try.run(new Try.TryListener() {
                 @Override
                 public void run() {
-                    cls.add(factory.createFieldFromText(generateLombokFieldText(classEntity, fieldEntity,null), cls));
+                    cls.add(factory.createFieldFromText(generateLombokFieldText(classEntity, fieldEntity, null), cls));
                 }
 
                 @Override

@@ -23,7 +23,7 @@ public class JsonDialog extends JFrame implements ConvertBridge.Operator {
     private JButton okButton;
     private JButton cancelButton;
     private JLabel errorLB;
-    private JTextPane editTP;
+    private JTextArea editTP;
     private JButton settingButton;
     private JLabel generateClassLB;
     private JTextField generateClassTF;
@@ -74,24 +74,24 @@ public class JsonDialog extends JFrame implements ConvertBridge.Operator {
 
             }
         });
-        editTP.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyReleased(KeyEvent keyEvent) {
-                super.keyReleased(keyEvent);
-                if (keyEvent.getKeyCode() == KeyEvent.VK_ENTER) {
-                    onOK();
-                }
-            }
-        });
-        generateClassP.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyReleased(KeyEvent keyEvent) {
-                super.keyReleased(keyEvent);
-                if (keyEvent.getKeyCode() == KeyEvent.VK_ENTER) {
-                    editTP.requestFocus(true);
-                }
-            }
-        });
+        // editTP.addKeyListener(new KeyAdapter() {
+        //     @Override
+        //     public void keyReleased(KeyEvent keyEvent) {
+        //         super.keyReleased(keyEvent);
+        //         if (keyEvent.getKeyCode() == KeyEvent.VK_ENTER) {
+        //             onOK();
+        //         }
+        //     }
+        // });
+        // generateClassP.addKeyListener(new KeyAdapter() {
+        //     @Override
+        //     public void keyReleased(KeyEvent keyEvent) {
+        //         super.keyReleased(keyEvent);
+        //         if (keyEvent.getKeyCode() == KeyEvent.VK_ENTER) {
+        //             editTP.requestFocus(true);
+        //         }
+        //     }
+        // });
         errorLB.addMouseListener(new MouseAdapter() {
 
             @Override
@@ -189,6 +189,7 @@ public class JsonDialog extends JFrame implements ConvertBridge.Operator {
         new ConvertBridge(this, jsonSTR, file, project, generateClass,
                 cls, generateClassName).run();
     }
+
     private void onCancel() {
         dispose();
     }
