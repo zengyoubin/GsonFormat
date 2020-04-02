@@ -85,7 +85,7 @@
           <title-color color="-4473925"/>
         </border>
         <children>
-          <scrollpane id="fe9d9">
+          <scrollpane id="fe9d9" binding="scrollView" custom-create="true">
             <constraints>
               <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
             </constraints>
@@ -98,12 +98,7 @@
             <border type="none">
               <size top="2" left="2" bottom="2" right="2"/>
             </border>
-            <children>
-              <component id="ecf28" class="javax.swing.JTextArea" binding="editTP">
-                <constraints/>
-                <properties/>
-              </component>
-            </children>
+            <children/>
           </scrollpane>
         </children>
       </grid>

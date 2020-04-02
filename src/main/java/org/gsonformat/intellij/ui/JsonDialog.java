@@ -6,6 +6,9 @@ import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.impl.source.PsiJavaFileImpl;
 import org.apache.http.util.TextUtils;
+import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
+import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
+import org.fife.ui.rsyntaxtextarea.Theme;
 import org.gsonformat.intellij.ConvertBridge;
 import org.gsonformat.intellij.common.PsiClassUtil;
 import org.gsonformat.intellij.config.Config;
@@ -15,6 +18,7 @@ import org.json.JSONObject;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.IOException;
 
 public class JsonDialog extends JFrame implements ConvertBridge.Operator {
 
@@ -23,12 +27,13 @@ public class JsonDialog extends JFrame implements ConvertBridge.Operator {
     private JButton okButton;
     private JButton cancelButton;
     private JLabel errorLB;
-    private JTextArea editTP;
+    private RSyntaxTextArea editTP;
     private JButton settingButton;
     private JLabel generateClassLB;
     private JTextField generateClassTF;
     private JPanel generateClassP;
     private JButton formatBtn;
+    private JScrollPane scrollView;
     private PsiClass cls;
     private PsiFile file;
     private Project project;
@@ -45,6 +50,7 @@ public class JsonDialog extends JFrame implements ConvertBridge.Operator {
         this.setAlwaysOnTop(true);
         initGeneratePanel(file);
         initListener();
+
     }
 
     private void initListener() {
@@ -212,7 +218,17 @@ public class JsonDialog extends JFrame implements ConvertBridge.Operator {
     }
 
     private void createUIComponents() {
-
+        editTP = new RSyntaxTextArea();
+        editTP.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JSON);
+        editTP.setCodeFoldingEnabled(true);
+        scrollView = new JScrollPane(editTP);
+        try {
+            Theme theme = Theme.load(getClass().getResourceAsStream(
+                    "/org/fife/ui/rsyntaxtextarea/themes/monokai.xml"));
+            theme.apply(editTP);
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        }
     }
 
     public void openSettingDialog() {
