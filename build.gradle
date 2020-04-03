@@ -27,6 +27,9 @@ sourceSets {
 
     }
 }
+repositories{
+    mavenCentral()
+}
 dependencies{
     compile 'com.fifesoft:rsyntaxtextarea:2.6.0'
 
